@@ -9,6 +9,18 @@ and  stm = Stmts of stm * stm
          | Assign of id * exp
          | Print of exp
 
+let (>>=)
+    : 'a option -> ('a -> 'b option) -> 'b option
+  = fun v f ->
+  match v with
+  | None   -> None
+  | Some x -> f x
+
+let return
+    : 'a -> 'a option
+  = fun v ->
+  Some v
+
 let e0
     : id -> int option
   = fun _ ->
@@ -23,18 +35,12 @@ let rec trans_stm
     : stm -> (id -> int option) -> (id -> int option) option
   = fun stm env ->
   match stm with
-  | Stmts  (s1, s2) -> (match trans_stm s1 env with
-                        | Some env' -> trans_stm s2 env'
-                        | None -> None
-                       )
-  | Assign (var, e) -> (match trans_exp e env with
-                        | Some v -> Some (update var v env)
-                        | None -> None
-                       )
-  | Print  e        -> (match trans_exp e env with
-                        | Some v -> print_int v; print_string "\n"; Some env
-                        | None -> None
-                       )
+  | Stmts  (s1, s2) -> trans_stm s1 env >>= fun env' ->
+                       trans_stm s2 env'
+  | Assign (var, e) -> trans_exp e env >>= fun v ->
+                       return (update var v env)
+  | Print  e        -> trans_exp e env >>= fun v ->
+                       print_int v; print_string "\n"; Some env
 
 and trans_exp
     : exp -> (id -> int option) -> int option
@@ -42,22 +48,18 @@ and trans_exp
   match exp with
   | ID  var      -> env var
   | Num n        -> Some n
-  | Add (e1, e2) -> (match (trans_exp e1 env, trans_exp e2 env) with
-                     | Some v1, Some v2 -> Some (v1 + v2)
-                     | _, _ -> None
-                    )
-  | Sub (e1, e2) -> (match (trans_exp e1 env, trans_exp e2 env) with
-                     | Some v1, Some v2 -> Some (v1 - v2)
-                     | _, _ -> None
-                    )
-  | Mul (e1, e2) -> (match (trans_exp e1 env, trans_exp e2 env) with
-                     | Some v1, Some v2 -> Some (v1 * v2)
-                     | _, _ -> None
-                    )
-  | Div (e1, e2) -> (match (trans_exp e1 env, trans_exp e2 env) with
-                     | Some v1, Some v2 -> Some (v1 / v2)
-                     | _, _ -> None
-                    )
+  | Add (e1, e2) -> trans_exp e1 env >>= fun v1 ->
+                    trans_exp e2 env >>= fun v2 ->
+                    return (v1 + v2)
+  | Sub (e1, e2) -> trans_exp e1 env >>= fun v1 ->
+                    trans_exp e2 env >>= fun v2 ->
+                    return (v1 - v2)
+  | Mul (e1, e2) -> trans_exp e1 env >>= fun v1 ->
+                    trans_exp e2 env >>= fun v2 ->
+                    return (v1 * v2)
+  | Div (e1, e2) -> trans_exp e1 env >>= fun v1 ->
+                    trans_exp e2 env >>= fun v2 ->
+                    return (v1 / v2)
 
 let interp
     : stm -> (id -> int option) option
