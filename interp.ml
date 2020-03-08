@@ -5,9 +5,10 @@ type exp = ID of id
          | Sub of exp * exp
          | Mul of exp * exp
          | Div of exp * exp
-and  stm = Stmts of stm * stm
+and  stm = Stmts  of stm * stm
          | Assign of id * exp
-         | Print of exp
+         | Print  of exp
+type env = id -> int option
 
 let (>>=)
     : 'a option -> ('a -> 'b option) -> 'b option
@@ -22,17 +23,17 @@ let return
   Some v
 
 let e0
-    : id -> int option
+    : env
   = fun _ ->
   None
 
 let update
-    : id -> int -> (id -> int option) -> (id -> int option)
-  = fun var vl env ->
-  fun v -> if (v = var) then Some vl else env v
+    : id -> int -> env -> env
+  = fun var v env ->
+  fun var' -> if (var' = var) then Some v else env var'
 
 let rec trans_stm
-    : stm -> (id -> int option) -> (id -> int option) option
+    : stm -> env -> env option
   = fun stm env ->
   match stm with
   | Stmts  (s1, s2) -> trans_stm s1 env >>= fun env' ->
@@ -43,7 +44,7 @@ let rec trans_stm
                        print_int v; print_string "\n"; Some env
 
 and trans_exp
-    : exp -> (id -> int option) -> int option
+    : exp -> env -> int option
   = fun exp env ->
   match exp with
   | ID  var      -> env var
@@ -62,7 +63,7 @@ and trans_exp
                     return (v1 / v2)
 
 let interp
-    : stm -> (id -> int option) option
+    : stm -> env option
   = fun stm ->
   trans_stm stm e0
                       
