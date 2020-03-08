@@ -1,4 +1,4 @@
-type id = string
+type id  = string
 type exp = ID of id
          | Num of int
          | Add of exp * exp
@@ -41,14 +41,16 @@ let rec trans_stm
   | Assign (var, e) -> trans_exp e env >>= fun v ->
                        return (update var v env)
   | Print  e        -> trans_exp e env >>= fun v ->
-                       print_int v; print_string "\n"; Some env
+                       print_int v ;
+                       print_string "\n" ;
+                       return env
 
 and trans_exp
     : exp -> env -> int option
   = fun exp env ->
   match exp with
   | ID  var      -> env var
-  | Num n        -> Some n
+  | Num n        -> return n
   | Add (e1, e2) -> trans_exp e1 env >>= fun v1 ->
                     trans_exp e2 env >>= fun v2 ->
                     return (v1 + v2)
@@ -66,8 +68,3 @@ let interp
     : stm -> env option
   = fun stm ->
   trans_stm stm e0
-                      
-let prog 
-    : stm
-  = Stmts (Assign ("x", Add (Num 1, Mul (Num 2, Num 3))),
-           Stmts (Assign ("y", Div (ID "x", Num 4)), Print (ID "y")))
