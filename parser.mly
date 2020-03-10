@@ -7,26 +7,26 @@
 %left MUL DIV
 
 %start parse
-%type <Interp.stm> parse
+%type <Ast.stm> parse
 
 %%
 
 parse:
-  |stm EOL              { $1 }
+  |stm EOL               { $1 }
   ;
 
 stm:
-  | stm SEMI stm         { Interp.Stmts  ($1, $3) }
-  | ID ASSIGN exp        { Interp.Assign ($1, $3) }
-  | PRINT exp            { Interp.Print  ($2) }
+  | stm SEMI stm         { Ast.Stmts  ($1, $3) }
+  | ID ASSIGN exp        { Ast.Assign ($1, $3) }
+  | PRINT exp            { Ast.Print  ($2) }
   ;
 
 exp:
-  | ID                   { Interp.ID  $1 }
-  | NUM                  { Interp.Num $1 }
+  | ID                   { Ast.ID  $1 }
+  | NUM                  { Ast.Num $1 }
   | LP exp RP            { $2 }
-  | exp ADD exp          { Interp.Add ($1, $3) }
-  | exp SUB exp          { Interp.Sub ($1, $3) }
-  | exp MUL exp          { Interp.Mul ($1, $3) }
-  | exp DIV exp          { Interp.Div ($1, $3) }
+  | exp ADD exp          { Ast.Add ($1, $3) }
+  | exp SUB exp          { Ast.Sub ($1, $3) }
+  | exp MUL exp          { Ast.Mul ($1, $3) }
+  | exp DIV exp          { Ast.Div ($1, $3) }
   ;

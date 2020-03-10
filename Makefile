@@ -3,6 +3,7 @@ calc: lexer.mll parser.mly calc.ml
 	ocamllex lexer.mll
 	ocamlyacc parser.mly
 # generate cmi & cmo
+	ocamlc -c ast.ml
 	ocamlc -c interp.ml
 	ocamlc -c parser.mli
 	ocamlc -c lexer.ml
