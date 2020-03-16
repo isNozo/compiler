@@ -7,12 +7,12 @@
 %left MUL DIV
 
 %start parse
-%type <Ast.stm> parse
+%type <Ast.exp> parse
 
 %%
 
 parse:
-  |stm EOL               { $1 }
+  | exp EOL              { $1 }
   ;
 
 stm:
