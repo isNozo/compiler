@@ -26,7 +26,29 @@ and trans_exp
   | Mul (e1, e2) -> ""
   | Div (e1, e2) -> ""
 
+let header
+    : string
+  = "\
+     \t.text\n\
+     \t.global main\n\
+     main:\n\
+    "
+
+let prologue
+    : string
+  = "\
+     \tpushq %rbp\n\
+     \tmovq %rsp, %rbp\n\
+    "
+
+let epilogue
+    : string
+  = "\
+     \tleaveq\n\
+     \tretq\n\
+    "
+
 let trans_prog
     : exp -> string
   = fun exp ->
-  trans_exp exp
+  header ^ prologue ^ (trans_exp exp) ^ epilogue
