@@ -7,7 +7,11 @@ let rec trans_stm
   match stm with
   | Stmts  (s1, s2) -> ""
   | Assign (var, e) -> ""
-  | Print  e        -> ""
+  | Print  e        -> trans_exp e ^
+                       "\tpopq %rsi\n" ^
+                       "\tleaq IO(%rip), %rdi\n" ^
+                       "\tmovq $0, %rax\n" ^
+                       "\tcallq printf\n"
 
 and trans_exp
     : exp -> string
@@ -29,6 +33,8 @@ and trans_exp
 let header
     : string
   = "\
+     IO:
+     \t.string \"%lld\"
      \t.text\n\
      \t.global main\n\
      main:\n\
@@ -49,6 +55,6 @@ let epilogue
     "
 
 let trans_prog
-    : exp -> string
-  = fun exp ->
-  header ^ prologue ^ (trans_exp exp) ^ epilogue
+    : stm -> string
+  = fun stm ->
+  header ^ prologue ^ (trans_stm stm) ^ epilogue
