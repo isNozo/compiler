@@ -11,7 +11,7 @@ let rec trans_stm
                        "\tpopq %rsi\n" ^
                        "\tleaq IO(%rip), %rdi\n" ^
                        "\tmovq $0, %rax\n" ^
-                       "\tcallq printf\n"
+                       "\tcallq printf@PLT\n"
 
 and trans_exp
     : exp -> string
@@ -34,7 +34,7 @@ let header
     : string
   = "\
      IO:
-     \t.string \"%lld\"
+     \t.string \"%lld\\n\"
      \t.text\n\
      \t.global main\n\
      main:\n\
