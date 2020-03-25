@@ -5,7 +5,7 @@ let rec trans_stm
     : stm -> string
   = fun stm ->
   match stm with
-  | Stmts  (s1, s2) -> ""
+  | Stmts  (s1, s2) -> trans_stm s1 ^ trans_stm s2
   | Assign (var, e) -> ""
   | Print  e        -> trans_exp e ^
                        "\tpopq %rsi\n" ^

@@ -1,18 +1,18 @@
-%token<int> NUM
-%token<string> ID
-%token ADD SUB MUL DIV ASSIGN PRINT LP RP SEMI EOL
+%token <int> NUM
+%token <string> ID
+%token ADD SUB MUL DIV ASSIGN PRINT LP RP SEMI EOF
 
 %right SEMI
 %left ADD SUB
 %left MUL DIV
 
-%start parse
-%type <Ast.stm> parse
+%start prg
+%type <Ast.stm> prg
 
 %%
 
-parse:
-  | stm EOL              { $1 }
+prg:
+  | stm                  { $1 }
   ;
 
 stm:

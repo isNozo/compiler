@@ -1,14 +1,19 @@
 {
   open Parser
-  exception Eof
+  exception No_such_symbol
 }
 
-let id = ['a'-'z'] ['a'-'z' '0'-'9']*
+let space = [' ' '\t' '\n' '\r']
+let digit = ['0'-'9']
+let lower = ['a'-'z']
+let upper = ['A'-'Z']
+let id = lower ('_'|lower|upper|digit)*
 
 rule token = parse
-  | ['0'-'9']+ as v { NUM (int_of_string(v)) }
+  | space+          { token lexbuf }
+  | digit+ as num   { NUM (int_of_string num) }
   | "print"         { PRINT }
-  | id as str       { ID str }
+  | id as text      { ID text }
   | '='             { ASSIGN }
   | '+'             { ADD }
   | '-'             { SUB }
@@ -17,6 +22,5 @@ rule token = parse
   | '('             { LP }
   | ')'             { RP }
   | ';'             { SEMI }
-  | [' ' '\t']      { token lexbuf }
-  | ['\n']          { EOL }
-  | eof             { raise Eof }
+  | eof             { EOF }
+  | _               { raise No_such_symbol }
