@@ -21,6 +21,8 @@ rule token = parse
   | '/'             { DIV }
   | '('             { LP }
   | ')'             { RP }
+  | '{'             { LB }
+  | '}'             { RB }
   | ';'             { SEMI }
   | eof             { EOF }
   | _               { raise No_such_symbol }

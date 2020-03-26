@@ -1,6 +1,6 @@
 %token <int> NUM
 %token <string> ID
-%token ADD SUB MUL DIV ASSIGN PRINT LP RP SEMI EOF
+%token ADD SUB MUL DIV ASSIGN PRINT LP RP LB RB SEMI EOF
 
 %right SEMI
 %left ADD SUB
@@ -15,9 +15,12 @@ prg:
   | stm                  { $1 }
   ;
 
+dec:
+  | ID ASSIGN exp        { Ast.Assign ($1, $3) }
+  ;
+
 stm:
   | stm SEMI stm         { Ast.Stmts  ($1, $3) }
-  | ID ASSIGN exp        { Ast.Assign ($1, $3) }
   | PRINT exp            { Ast.Print  ($2) }
   ;
 

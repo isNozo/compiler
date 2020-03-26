@@ -6,5 +6,7 @@ type exp = ID of id
          | Mul of exp * exp
          | Div of exp * exp
 and  stm = Stmts  of stm * stm
-         | Assign of id * exp
+         | Block  of dec * stm
          | Print  of exp
+and  dec = Decls  of dec * dec
+         | Assign of id * exp
