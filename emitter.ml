@@ -5,20 +5,20 @@ let rec trans_stm
     : stm -> string
   = fun stm ->
   match stm with
-  | Stmts  (s1, s2) -> trans_stm s1 ^ trans_stm s2
   | Assign (var, e) -> ""
   | Print  e        -> trans_exp e ^
                        "\tpopq %rsi\n" ^
                        "\tleaq IO(%rip), %rdi\n" ^
                        "\tmovq $0, %rax\n" ^
                        "\tcallq printf@PLT\n"
+  | _               -> ""
 
 and trans_exp
     : exp -> string
   = fun exp ->
   match exp with
-  | ID  var      -> ""
-  | Num n        -> (sprintf "\tpushq $%d\n" n)
+  | VarExp var   -> "<debug " ^ var ^ " >\n"
+  | IntExp num   -> (sprintf "\tpushq $%d\n" num)
   | Add (e1, e2) -> trans_exp e1 ^
                     trans_exp e2 ^
                     "\tpopq %rax\n" ^

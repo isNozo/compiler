@@ -12,8 +12,9 @@ let id = lower ('_'|lower|upper|digit)*
 rule token = parse
   | space+          { token lexbuf }
   | digit+ as num   { NUM (int_of_string num) }
-  | "print"         { PRINT }
   | id as text      { ID text }
+  | "print"         { PRINT }
+  | "int"           { INT }
   | '='             { ASSIGN }
   | '+'             { ADD }
   | '-'             { SUB }
